@@ -1,0 +1,1 @@
+F:\AndroidSDK\platform-tools\adb.exe install G:\AI\Unity-Tensorflow\UnityProj\Gradle\UnityTensorflow\build\outputs\apk\debug\UnityTensorflow-debug.apk
