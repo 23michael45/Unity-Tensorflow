@@ -32,6 +32,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     //compile(name: 'utflibrary-release', ext: 'aar')
-    compile(name: 'tensorflow-android-1.6.0', ext: 'aar')
-    compile project(':utflibrary')
+    implementation(name: 'tensorflow-android-1.6.0', ext: 'aar')
+    implementation project(':utflibrary')
 }

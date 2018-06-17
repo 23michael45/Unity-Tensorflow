@@ -104,28 +104,17 @@ public class ArbitraryStyleTransfer{
         //Bitmap bitmap= BitmapFactory.decodeStream(is);
         return bitmap;
     }
-
-
-    public Bitmap transfer(final String contentPath,final String stylePath,final String outPath) throws IOException {
-
-        Bitmap contentBitmap = LoadBitmap(contentPath);
-        Bitmap styleBitmap = LoadBitmap(stylePath);
-
-        //SaveBitmap(contentBitmap,"content");
-        //SaveBitmap(styleBitmap,"style");
+    public int[] transfer(final  int contentWidth,final  int contentHeight,final float[] contentData,final int styleWidth,final int sytleHeight,final float[] styleData) throws IOException {
 
         TraceCompat.beginSection("preprocessBitmap");
-
-        float[] contentFloat = ConvertBitmap2FloatArray(contentBitmap);
-        float[] styleFloat = ConvertBitmap2FloatArray(styleBitmap);
-        inferenceInterface.feed(inputContentName,contentFloat , new long[]{1, contentBitmap.getHeight(), contentBitmap.getWidth(), 3});
-        inferenceInterface.feed(inputStyleName, styleFloat, new long[]{1, styleBitmap.getHeight(), styleBitmap.getWidth(), 3});
+        inferenceInterface.feed(inputContentName,contentData , new long[]{1, contentHeight,contentWidth , 3});
+        inferenceInterface.feed(inputStyleName, styleData, new long[]{1, sytleHeight, styleWidth, 3});
 
 
         TraceCompat.endSection();
 
 
-        outputs = new float[contentBitmap.getWidth() * contentBitmap.getHeight()*3];
+        outputs = new float[contentWidth * contentHeight*3];
         inferenceInterface.run(outputNames, runStats);
         inferenceInterface.fetch(outputName, outputs);
 
@@ -141,6 +130,23 @@ public class ArbitraryStyleTransfer{
             rgb =(255<< 24) + (val1<< 16 )+ (val2 << 8) + val3;
             outInt[i/3] = rgb;
         }
+        return outInt;
+    }
+
+    public Bitmap transferfromfile(final String contentPath,final String stylePath,final String outPath) throws IOException {
+
+        Bitmap contentBitmap = LoadBitmap(contentPath);
+        Bitmap styleBitmap = LoadBitmap(stylePath);
+
+        //SaveBitmap(contentBitmap,"content");
+        //SaveBitmap(styleBitmap,"style");
+
+
+        float[] contentFloat = ConvertBitmap2FloatArray(contentBitmap);
+        float[] styleFloat = ConvertBitmap2FloatArray(styleBitmap);
+
+        int[] outInt = transfer(contentBitmap.getWidth(),contentBitmap.getHeight(),contentFloat,styleBitmap.getWidth(),styleBitmap.getHeight(),styleFloat);
+
         Bitmap outBitmap = Bitmap.createBitmap(contentBitmap.getWidth(), contentBitmap.getHeight(), Bitmap.Config.ARGB_8888);
         outBitmap.setPixels(outInt,0,contentBitmap.getWidth(),0,0,contentBitmap.getWidth(), contentBitmap.getHeight());
         SaveBitmap(outBitmap,outPath);

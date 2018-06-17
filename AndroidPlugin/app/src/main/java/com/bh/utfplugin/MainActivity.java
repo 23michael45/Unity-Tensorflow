@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
                     String outPath = path + "/outimage.jpg";
 
-                    Bitmap bitmap = UtfLibraryInterface.Transfer(contentPath,stylePath,outPath);
+                    Bitmap bitmap = UtfLibraryInterface.TransferFromFile(contentPath,stylePath,outPath);
 
                     mResultImageView.setImageBitmap((bitmap));
                 } catch (IOException e) {
