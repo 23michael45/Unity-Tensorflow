@@ -152,6 +152,8 @@ public class Caller : MonoBehaviour
 
 
 #if UNITY_ANDROID //&& !UNITY_EDITOR
+
+        AndroidJNI.AttachCurrentThread();
         //Unity侧调用Android侧代码
         using (AndroidJavaClass jc = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
         {
@@ -162,6 +164,26 @@ public class Caller : MonoBehaviour
                 jinterface.CallStatic("Init", jcurrentActivity);
 
 
+                AndroidJavaObject outArrayObj = jinterface.CallStatic<AndroidJavaObject>("TryArrayOutput");
+                int[] outArray = AndroidJNIHelper.ConvertFromJNIArray<int[]>(outArrayObj.GetRawObject());
+                Debug.Log("ConvertFromJNIArray:" + outArray.Length);
+
+
+                float[] farr = new float[4] { 4, 3, 2, 1 };
+
+                IntPtr faddr = AndroidJNIHelper.ConvertToJNIArray(farr);
+
+
+                jvalue[] fparam = new jvalue[1];
+                fparam[0] = ConvertFloatArrayToJNI(farr);
+
+                IntPtr jinterfaceAddr = AndroidJNI.FindClass("com/bh/utflibrary/UtfLibraryInterface");
+                IntPtr methodAddr = AndroidJNI.GetStaticMethodID(jinterfaceAddr, "TryArrayInput", "(Ljava/lang/Object;)V");
+                
+                Debug.Log("Call TryArrayInput:" + jinterfaceAddr + ":" + methodAddr);
+                AndroidJNI.CallStaticVoidMethod(jinterfaceAddr, methodAddr, fparam);
+
+
                 //AndroidJavaClass jenvironment = new AndroidJavaClass("android.os.Environment");
                 //string path = jinterface.CallStatic<AndroidJavaObject>("getExternalStorageDirectory").Call<string>("toString");
 
@@ -169,31 +191,30 @@ public class Caller : MonoBehaviour
 
 
 
-                AndroidJNI.AttachCurrentThread();
 
-                jvalue[] jparam = new jvalue[6];
+                //jvalue[] jparam = new jvalue[6];
 
-                jvalue contentJArr, styleJArr;
-                jparam[0].i = contentWidth;
-                jparam[1].i = contentHeight;
-                jparam[2] = contentJArr = ConvertFloatArrayToJNI(contentData);
+                //jvalue contentJArr, styleJArr;
+                //jparam[0].i = contentWidth;
+                //jparam[1].i = contentHeight;
+                //jparam[2] = contentJArr = ConvertFloatArrayToJNI(contentData);
 
-                jparam[3].i = styleWidth;
-                jparam[4].i = styleHeight;
-                jparam[5] = styleJArr = ConvertFloatArrayToJNI(styleData);
+                //jparam[3].i = styleWidth;
+                //jparam[4].i = styleHeight;
+                //jparam[5] = styleJArr = ConvertFloatArrayToJNI(styleData);
 
 
-                Debug.Log("Start Transfer");
+                //Debug.Log("Start Transfer");
 
-                IntPtr jinterfaceAddr = AndroidJNI.FindClass("com/bh/utflibrary/UtfLibraryInterface");
-                IntPtr methodAddr = AndroidJNI.GetStaticMethodID(jinterfaceAddr, "Transfer", "com/bh/utflibrary/UtfLibraryInterface");
+                //IntPtr jinterfaceAddr = AndroidJNI.FindClass("com/bh/utflibrary/UtfLibraryInterface");
+                //IntPtr methodAddr = AndroidJNI.GetStaticMethodID(jinterfaceAddr, "Transfer", "com/bh/utflibrary/UtfLibraryInterface");
 
-                Debug.Log("Call Transfer");
-                IntPtr addr = AndroidJNI.CallStaticObjectMethod(jinterfaceAddr, methodAddr, jparam);
+                //Debug.Log("Call Transfer");
+                //IntPtr addr = AndroidJNI.CallStaticObjectMethod(jinterfaceAddr, methodAddr, jparam);
 
-                Debug.Log("End Call Transfer");
-                outimageData = AndroidJNI.FromIntArray(addr);
-                Debug.Log("End Transfer:" + outimageData.Length);
+                //Debug.Log("End Call Transfer");
+                //outimageData = AndroidJNI.FromIntArray(addr);
+                //Debug.Log("End Transfer:" + outimageData.Length);
 
                 //int[] arrObj = jinterface.CallStatic<int[]>("Transfer", contentWidth, contentHeight, contentData, styleWidth, styleHeight, styleData);
 
