@@ -14,6 +14,8 @@ public class UtfLibraryInterface {
     private static ArbitraryStyleTransfer mTransfer;
     public static AssetManager mAssetManager;
 
+
+    private static int[] outputs;
     public static void Init(Activity currentActivity) throws IOException {
         mTransfer = ArbitraryStyleTransfer.create(currentActivity.getAssets());
     }
@@ -33,17 +35,26 @@ public class UtfLibraryInterface {
         }
     }
 
-    public static int[] Transfer(final int contentWidth, final int contentHeight, final float[] contentData, final int styleWidth, final int sytleHeight, final float[] styleData) throws IOException {
+    public static void Transfer(final int contentWidth, final int contentHeight, final float[] contentData, final int styleWidth, final int sytleHeight, final float[] styleData) throws IOException {
         try {
-            Log.i(TAG, "contentWidth : " + contentWidth + " contentData Len" + contentData.length);
-            return mTransfer.transfer(contentWidth, contentHeight, contentData, styleWidth, sytleHeight, styleData);
+            Log.i(TAG, "contentWidth : " + contentWidth + ":"+contentHeight + " contentData Len" + contentData.length + ": styleData Len" + styleData.length);
+            outputs = mTransfer.transfer(contentWidth, contentHeight, contentData, styleWidth, sytleHeight, styleData);
 
         } catch (IOException e) {
             e.printStackTrace();
-            return null;
+            return;
         }
     }
+    public static int[] GetOutputs()
+    {
+        if(outputs != null)
+        {
+            Log.i(TAG, "GetOutputs : " + outputs.length);
+            return outputs;
 
+        }
+        return null;
+    }
     public static void TryArrayInput(final float[] input) {
         Log.i(TAG, "TryArrayInput : " + input.length);
 

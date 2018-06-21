@@ -4,7 +4,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
-import android.support.v4.os.TraceCompat;
+//import android.support.v4.os.TraceCompat;
 import android.util.Log;
 
 import org.tensorflow.Operation;
@@ -106,20 +106,25 @@ public class ArbitraryStyleTransfer{
     }
     public int[] transfer(final  int contentWidth,final  int contentHeight,final float[] contentData,final int styleWidth,final int sytleHeight,final float[] styleData) throws IOException {
 
-        TraceCompat.beginSection("preprocessBitmap");
+        //TraceCompat.beginSection("preprocessBitmap");
+
+        Log.i(TAG, "transfer Feed:" + contentWidth + ":" + contentHeight+ ":" +  styleWidth + ":" + sytleHeight+ ":" +  contentData.length + ":" + styleData.length);
+
         inferenceInterface.feed(inputContentName,contentData , new long[]{1, contentHeight,contentWidth , 3});
         inferenceInterface.feed(inputStyleName, styleData, new long[]{1, sytleHeight, styleWidth, 3});
 
 
-        TraceCompat.endSection();
+        //TraceCompat.endSection();
 
 
+        Log.i(TAG, "transfer Run");
         outputs = new float[contentWidth * contentHeight*3];
         inferenceInterface.run(outputNames, runStats);
         inferenceInterface.fetch(outputName, outputs);
 
 
 
+        Log.i(TAG, "transfer RGB");
         int[] outInt = new int[outputs.length/3];
         for (int i = 0; i < outputs.length; i += 3) {
             final int val1 = (int)outputs[i];
@@ -130,6 +135,7 @@ public class ArbitraryStyleTransfer{
             rgb =(255<< 24) + (val1<< 16 )+ (val2 << 8) + val3;
             outInt[i/3] = rgb;
         }
+        Log.i(TAG, "transfer End");
         return outInt;
     }
 
